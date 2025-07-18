@@ -1,0 +1,8 @@
+# Default ignored files
+/shelf/
+/workspace.xml
+# Rider ignored files
+/.idea.unity-2d-topdown-shooter.iml
+/projectSettingsUpdater.xml
+/modules.xml
+/contentModel.xml
