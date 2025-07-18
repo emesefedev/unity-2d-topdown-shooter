@@ -88,94 +88,9 @@ namespace Emesefe.Utilities
         }
 
         #endregion
-
-        #region World Mouse Position
-
-        // Get Mouse Position in World with Z = 0f
-        public static Vector3 GetMouseWorldPosition()
-        {
-            Vector3 mousePosition = GetMouseWorldPositionWithZ(Input.mousePosition, Camera.main);
-            mousePosition.z = 0f;
-            return mousePosition;
-        }
-
-        // Get Mouse Position in World
-        private static Vector3 GetMouseWorldPositionWithZ(Vector3 screenPosition, Camera camera)
-        {
-            Vector3 worldPosition = camera.ScreenToWorldPoint(screenPosition);
-            return worldPosition;
-        }
-
-        #endregion
-
-        // Get Main Canvas Transform
-        public static Transform GetCanvasTransform()
-        {
-            if (cachedCanvasTransform != null) return cachedCanvasTransform;
-
-            Canvas canvas = Object.FindObjectOfType<Canvas>();
-            if (canvas != null)
-            {
-                cachedCanvasTransform = canvas.transform;
-            }
-            else
-            {
-                // Create Canvas
-                GameObject canvasGameObject = new GameObject("Canvas");
-                canvas = canvasGameObject.AddComponent<Canvas>();
-                canvas.renderMode = RenderMode.ScreenSpaceOverlay;
-                
-                CanvasScaler canvasScaler = canvasGameObject.AddComponent<CanvasScaler>();
-                canvasScaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
-                canvasScaler.referenceResolution = DefaultReferenceResolution;
-                
-                canvasGameObject.AddComponent<GraphicRaycaster>();
-                
-                cachedCanvasTransform = canvasGameObject.transform;
-                
-                // Create Event System
-                GameObject eventSystemGameObject = new GameObject("Event System");
-                eventSystemGameObject.AddComponent<EventSystem>();
-                eventSystemGameObject.AddComponent<StandaloneInputModule>();
-                eventSystemGameObject.AddComponent<BaseInput>();
-            }
-            
-            return cachedCanvasTransform;
-        }
-
-        // Draw a UI Sprite
-        public static RectTransform DrawSprite(Color color, Transform parent, Vector2 pos, Vector2 size,
-            string name = null)
-        {
-            RectTransform rectTransform = DrawSprite(null, color, parent, pos, size, name);
-            return rectTransform;
-        }
-
-        public static RectTransform DrawSprite(Sprite sprite, Transform parent, Vector2 pos, Vector2 size,
-            string name = null)
-        {
-            RectTransform rectTransform = DrawSprite(sprite, Color.white, parent, pos, size, name);
-            return rectTransform;
-        }
-
-        public static RectTransform DrawSprite(Sprite sprite, Color color, Transform parent, Vector2 pos, Vector2 size,
-            string name = null)
-        {
-            // Setup icon
-            if (string.IsNullOrEmpty(name)) name = "Sprite";
-            GameObject go = new GameObject(name, typeof(RectTransform), typeof(Image));
-            RectTransform goRectTransform = go.GetComponent<RectTransform>();
-            goRectTransform.SetParent(parent, false);
-            goRectTransform.sizeDelta = size;
-            goRectTransform.anchoredPosition = pos;
-
-            Image image = go.GetComponent<Image>();
-            image.sprite = sprite;
-            image.color = color;
-
-            return goRectTransform;
-        }
-
+        
+        #region TMPro Text
+        
         public static TMP_Text DrawTMPTextUI(string textString, Vector2 anchoredPosition, int fontSize, TMP_FontAsset font)
         {
             return DrawTMPTextUI(textString, GetCanvasTransform(), anchoredPosition, fontSize, font);
@@ -213,6 +128,105 @@ namespace Emesefe.Utilities
             return EmesefeAssets.Instance.defaultFont;
         }
         
+        #endregion
+
+        #region World Mouse Position
+
+        // Get Mouse Position in World with Z = 0f
+        public static Vector3 GetMouseWorldPosition()
+        {
+            Vector3 mousePosition = GetMouseWorldPositionWithZ(Input.mousePosition, Camera.main);
+            mousePosition.z = 0f;
+            return mousePosition;
+        }
+
+        // Get Mouse Position in World
+        private static Vector3 GetMouseWorldPositionWithZ(Vector3 screenPosition, Camera camera)
+        {
+            Vector3 worldPosition = camera.ScreenToWorldPoint(screenPosition);
+            return worldPosition;
+        }
+
+        #endregion
+
+        #region Canvas Transform
+
+        // Get Main Canvas Transform
+        public static Transform GetCanvasTransform()
+        {
+            if (cachedCanvasTransform != null) return cachedCanvasTransform;
+
+            Canvas canvas = Object.FindObjectOfType<Canvas>();
+            if (canvas != null)
+            {
+                cachedCanvasTransform = canvas.transform;
+            }
+            else
+            {
+                // Create Canvas
+                GameObject canvasGameObject = new GameObject("Canvas");
+                canvas = canvasGameObject.AddComponent<Canvas>();
+                canvas.renderMode = RenderMode.ScreenSpaceOverlay;
+                
+                CanvasScaler canvasScaler = canvasGameObject.AddComponent<CanvasScaler>();
+                canvasScaler.uiScaleMode = CanvasScaler.ScaleMode.ScaleWithScreenSize;
+                canvasScaler.referenceResolution = DefaultReferenceResolution;
+                
+                canvasGameObject.AddComponent<GraphicRaycaster>();
+                
+                cachedCanvasTransform = canvasGameObject.transform;
+                
+                // Create Event System
+                GameObject eventSystemGameObject = new GameObject("Event System");
+                eventSystemGameObject.AddComponent<EventSystem>();
+                eventSystemGameObject.AddComponent<StandaloneInputModule>();
+                eventSystemGameObject.AddComponent<BaseInput>();
+            }
+            
+            return cachedCanvasTransform;
+        }
+
+        #endregion
+
+        #region UI Sprite
+        
+        // Draw a UI Sprite
+        public static RectTransform DrawSprite(Color color, Transform parent, Vector2 pos, Vector2 size,
+            string name = null)
+        {
+            RectTransform rectTransform = DrawSprite(null, color, parent, pos, size, name);
+            return rectTransform;
+        }
+
+        public static RectTransform DrawSprite(Sprite sprite, Transform parent, Vector2 pos, Vector2 size,
+            string name = null)
+        {
+            RectTransform rectTransform = DrawSprite(sprite, Color.white, parent, pos, size, name);
+            return rectTransform;
+        }
+
+        public static RectTransform DrawSprite(Sprite sprite, Color color, Transform parent, Vector2 pos, Vector2 size,
+            string name = null)
+        {
+            // Setup icon
+            if (string.IsNullOrEmpty(name)) name = "Sprite";
+            GameObject go = new GameObject(name, typeof(RectTransform), typeof(Image));
+            RectTransform goRectTransform = go.GetComponent<RectTransform>();
+            goRectTransform.SetParent(parent, false);
+            goRectTransform.sizeDelta = size;
+            goRectTransform.anchoredPosition = pos;
+
+            Image image = go.GetComponent<Image>();
+            image.sprite = sprite;
+            image.color = color;
+
+            return goRectTransform;
+        }
+        
+        #endregion
+
+        #region Parser
+        
         // Parse string to int, return default if failed
         public static int ParseStringToInt(string txt, int defaultInt = -1) {
             if (!int.TryParse(txt, out int i)) {
@@ -220,5 +234,22 @@ namespace Emesefe.Utilities
             }
             return i;
         }
+        
+        #endregion
+
+        #region Angles
+        
+        public static float GetAngleFromVectorFloat(Vector3 direction, bool inDegrees = true) {
+            direction = direction.normalized;
+            float angle = Mathf.Atan2(direction.y, direction.x) * (inDegrees ? Mathf.Rad2Deg : 1);
+            
+            if (angle < 0) angle += (inDegrees ? 360 : 2 * Mathf.PI);
+
+            return angle;
+        }
+        
+        #endregion
+        
+        
     }
 }
