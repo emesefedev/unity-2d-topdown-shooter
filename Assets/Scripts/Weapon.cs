@@ -8,7 +8,7 @@ public class Weapon : MonoBehaviour
     private Vector3 position;
     private Vector3 lookDirection = Vector3.up;
     
-    [SerializeField] private GameObject shootingPosition;
+    [SerializeField] private Transform shootingPosition;
 
     public static event Action OnShoot;
 
@@ -35,5 +35,10 @@ public class Weapon : MonoBehaviour
             Debug.Log("PUM");
             OnShoot?.Invoke();
         }
+    }
+
+    public Vector3 GetShootingPosition()
+    {
+        return shootingPosition.position;
     }
 }
