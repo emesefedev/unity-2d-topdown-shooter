@@ -8,7 +8,7 @@ public class Weapon : MonoBehaviour
     private Vector3 position;
     private Vector3 lookDirection = Vector3.up;
     
-    [SerializeField] private GameObject shootingPosition;
+    [SerializeField] private Transform shootingPosition;
 
     public static event Action OnShoot;
 
@@ -20,11 +20,11 @@ public class Weapon : MonoBehaviour
 
     private void HandlePositionAndRotation()
     {
-        lookDirection = Utils.GetMouseWorldPosition().normalized;
+        lookDirection = (Utils.GetMouseWorldPosition() - transform.position).normalized;    
         angle = Utils.GetAngleFromVectorFloat(lookDirection, false);
         position = new Vector3(Mathf.Cos(angle), Mathf.Sin(angle));
         
-        transform.position = position;
+        transform.localPosition = position;
         transform.up = lookDirection;
     }
 
@@ -32,8 +32,12 @@ public class Weapon : MonoBehaviour
     {
         if (Input.GetMouseButtonDown(0))
         {
-            Debug.Log("PUM");
             OnShoot?.Invoke();
         }
+    }
+
+    public Vector3 GetShootingPosition()
+    {
+        return shootingPosition.position;
     }
 }
