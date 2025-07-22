@@ -1,17 +1,20 @@
 using System;
 using UnityEngine;
+using System.Collections.Generic;
 
-public class BouncyGrenade : MonoBehaviour
+public class StickyGrenade : MonoBehaviour
 {
+    private static List<StickyGrenade> stickyGrenadesList = new List<StickyGrenade>();
     private static int ammo = AMMO_MAX;
-    private const int AMMO_MAX = 5;
+    private const int AMMO_MAX = 8;
     
-    private float speed = 50f;
+    private float speedMultiplier = 4f;
+    private float minSpeed = 10f;
+    private float maxSpeed = 100f;
+    private float angularVelocity = -100f;
+    
     private Rigidbody2D rigidbody;
     private Action<Vector3> _OnExplodeAction;
-
-    private float time;
-    private float timeToExplode = 2.5f;
 
     private int scaleState = 0;
     private float scaleSpeed = 10f;
@@ -21,15 +24,11 @@ public class BouncyGrenade : MonoBehaviour
     private void Update()
     {
         HandleScale();
-        HandleExplosion();
     }
-    
+
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.gameObject.GetComponent<ExplodeOnContact>() != null)
-        {
-            ExplodeGrenade();   
-        }
+        StopMoving();
     }
 
     private void HandleScale()
@@ -48,15 +47,6 @@ public class BouncyGrenade : MonoBehaviour
                 break;
         }
     }
-
-    private void HandleExplosion()
-    {
-        time -= Time.deltaTime;
-        if (time <= 0)
-        {
-            ExplodeGrenade();
-        }
-    }
     
     public static bool HasAmmo()
     {
@@ -73,12 +63,29 @@ public class BouncyGrenade : MonoBehaviour
         return ammo < AMMO_MAX;
     }
     
-    public static void Create(Transform bouncyGrenadePrefab, Vector3 spawnPosition, Vector3 targetPosition, Action<Vector3> OnExplodeAction)
+    public static void Create(Transform stickyGrenadePrefab, Vector3 spawnPosition, Vector3 targetPosition, Action<Vector3> OnExplodeAction)
     {
-        BouncyGrenade bouncyGrenade = Instantiate(bouncyGrenadePrefab, spawnPosition, Quaternion.identity).GetComponent<BouncyGrenade>();
-        bouncyGrenade.Setup(targetPosition, OnExplodeAction);
+        StickyGrenade stickyGrenade = Instantiate(stickyGrenadePrefab, spawnPosition, Quaternion.identity).GetComponent<StickyGrenade>();
+        stickyGrenade.Setup(targetPosition, OnExplodeAction);
+        
+        stickyGrenadesList ??= new List<StickyGrenade>();
+        stickyGrenadesList.Add(stickyGrenade);
 
+        if (stickyGrenadesList.Count > AMMO_MAX)
+        {
+            stickyGrenadesList[0].ExplodeGrenade();
+            stickyGrenadesList.RemoveAt(0);
+        }
         ammo--;
+    }
+
+    public static void ExplodeAllGrenades()
+    {
+        foreach (StickyGrenade stickyGrenade in stickyGrenadesList)
+        {
+            stickyGrenade.ExplodeGrenade();
+        }   
+        stickyGrenadesList.Clear();
     }
 
     private void Setup(Vector3 targetPosition, Action<Vector3> OnExplodeAction)
@@ -86,19 +93,27 @@ public class BouncyGrenade : MonoBehaviour
         Vector3 moveDirection = (targetPosition - transform.position).normalized;
         
         rigidbody = GetComponent<Rigidbody2D>();
+        
+        float distance = Vector2.Distance(transform.position, targetPosition);
+        float speed = Mathf.Clamp(distance * speedMultiplier, minSpeed, maxSpeed);
         rigidbody.velocity = moveDirection * speed;
+        rigidbody.angularVelocity = angularVelocity;
         
         transform.up = moveDirection;
 
         _OnExplodeAction = OnExplodeAction;
-
-        time = timeToExplode;
     }
 
     private void ExplodeGrenade()
     {
         _OnExplodeAction(transform.position);
         Destroy(gameObject);
+    }
+
+    private void StopMoving()
+    {
+        Destroy(rigidbody);
+        Destroy(gameObject.GetComponent<CircleCollider2D>());
     }
     
     

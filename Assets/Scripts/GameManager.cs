@@ -5,6 +5,7 @@ public class GameManager : MonoBehaviour
 {
     [SerializeField] private Weapon weapon;
     [SerializeField] private Transform bouncyGrenadePrefab;
+    [SerializeField] private Transform stickyGrenadePrefab;
     [SerializeField] private Transform grenadeExplosionPrefab;
 
     private float damageRadius = 5f;
@@ -14,9 +15,39 @@ public class GameManager : MonoBehaviour
         Weapon.OnShoot += Weapon_OnShoot;
     }
 
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            // if (BouncyGrenade.CanReload())
+            // {
+            //     BouncyGrenade.Reload();
+            // }
+            
+            if (StickyGrenade.CanReload())
+            {
+                StickyGrenade.Reload();
+            }
+        }
+        
+        if (Input.GetMouseButtonDown(1))
+        {
+            StickyGrenade.ExplodeAllGrenades();
+        }
+    }
+
     private void Weapon_OnShoot()
     {
-        BouncyGrenade.Create(bouncyGrenadePrefab, weapon.GetShootingPosition(), Utils.GetMouseWorldPosition(), OnGrenadeExplode);
+        // if (BouncyGrenade.HasAmmo()) 
+        // {
+        //     BouncyGrenade.Create(bouncyGrenadePrefab, weapon.GetShootingPosition(), Utils.GetMouseWorldPosition(), OnGrenadeExplode);
+        // }
+
+        if (StickyGrenade.HasAmmo())
+        {
+            StickyGrenade.Create(stickyGrenadePrefab, weapon.GetShootingPosition(), Utils.GetMouseWorldPosition(), OnGrenadeExplode);
+        }
+        
     }
 
     private void OnGrenadeExplode(Vector3 position)
