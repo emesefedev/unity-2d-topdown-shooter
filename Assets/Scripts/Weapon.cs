@@ -10,12 +10,9 @@ public class Weapon : MonoBehaviour
     
     [SerializeField] private Transform shootingPosition;
 
-    public static event Action OnShoot;
-
     private void Update()
     {
         HandlePositionAndRotation();
-        HandleShooting();
     }
 
     private void HandlePositionAndRotation()
@@ -26,14 +23,6 @@ public class Weapon : MonoBehaviour
         
         transform.localPosition = position;
         transform.up = lookDirection;
-    }
-
-    private void HandleShooting()
-    {
-        if (Input.GetMouseButtonDown(0))
-        {
-            OnShoot?.Invoke();
-        }
     }
 
     public Vector3 GetShootingPosition()

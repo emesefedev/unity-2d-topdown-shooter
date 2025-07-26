@@ -1,9 +1,18 @@
+using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
-public class PlayerCharacter : MonoBehaviour
+public class Enemy : MonoBehaviour
 {
-    private float speed = 40f;
-    private Vector3 lastMoveDirection;
+    [SerializeField] private LayerMask collisionLayer;
+    private Transform player;
+    private float speed = 10f;
+
+    private void Start()
+    {
+        player = FindObjectOfType<PlayerCharacter>().gameObject.transform;
+    }
+    
     private void Update()
     {
         HandleMovement();
@@ -11,35 +20,12 @@ public class PlayerCharacter : MonoBehaviour
 
     private void HandleMovement()
     {
-        float moveX = 0f;
-        float moveY = 0f;
-        
-        if (Input.GetKey(KeyCode.D)) moveX = 1;
-        
-        if (Input.GetKey(KeyCode.A)) moveX = -1;
-        
-        if (Input.GetKey(KeyCode.W)) moveY = 1;
-        
-        if (Input.GetKey(KeyCode.S)) moveY = -1;
-        
-        bool isIdle = moveX == 0 && moveY==0;
-        if (isIdle)
-        {
-            // TODO: Idle animation
-        }
-        else
-        {
-            float distance = speed * Time.deltaTime;
-            Vector3 moveDirection = new Vector3(moveX, moveY, 0).normalized;
+        float distance = speed * Time.deltaTime;
+        Vector3 moveDirection = (player.position - transform.position).normalized;
 
-            if (TryMove(moveDirection, distance))
-            {
-                // TODO: Walking animation
-            }
-            else
-            {
-                // TODO: Idle animation
-            }
+        if (TryMove(moveDirection, distance))
+        {
+            // TODO: Walking animation
         }
     }
 
@@ -66,19 +52,25 @@ public class PlayerCharacter : MonoBehaviour
         if (canMove)
         {
             // Can move vertically
-            lastMoveDirection = direction;
             transform.position += direction * distance;
             return true;
         }
+        
 
         return false;
     }
 
     private bool CanMove(Vector3 direction, float distance)
     {
-        return Physics2D.Raycast(transform.position, direction, distance).collider == null;
+        Collider2D collider = Physics2D.Raycast(transform.position, direction, distance, collisionLayer).collider;
+        return collider == null;
     }
 
+    public void Die()
+    {
+        Destroy(gameObject);
+    }
+    
     public Vector3 GetPosition()
     {
         return transform.position;
